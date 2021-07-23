@@ -55,7 +55,7 @@ public class Agent : MonoBehaviour
 
     private void Move()
     {
-        Arrive();
+        Seek();
         ApplyForce(CalculateSteering(SteeringType.Cohesion) * cohesionWeight +
                    CalculateSteering(SteeringType.Align) * alignWeight +
                    CalculateSteering(SteeringType.Separation) * separationWeight);
@@ -141,22 +141,18 @@ public class Agent : MonoBehaviour
     }
 
     // Moves to the leader position
-    private void Arrive()
+    private void Seek()
     {
         Vector3 desired;
         desired = leader.transform.position - transform.position;
-
-        float dist = (leader.transform.position - transform.position).magnitude;
-        
-        float speed = Map(dist, 0, viewDistance, 0, maxSpeed);
-            
         desired.Normalize();
-        desired *= speed;
+        desired *= leader.maxSpeed;
 
-        Vector3 steering = desired - _velocity;
-        steering = Vector3.ClampMagnitude(steering, maxForce);
+        Vector3 steering = desired - leader.GetVelocity();
+        steering = Vector3.ClampMagnitude(steering, leader.maxForce);
 
         _velocity = Vector3.ClampMagnitude(_velocity + steering, maxSpeed);
+        _velocity = new Vector3(_velocity.x, 0f, _velocity.z);
     }
     
     private void ApplyForce(Vector3 force)
