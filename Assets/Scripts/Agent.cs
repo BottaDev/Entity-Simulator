@@ -6,7 +6,9 @@ using Random = UnityEngine.Random;
 public class Agent : MonoBehaviour
 {
     public Leader leader;
-    public AgentTeam team;    
+    public AgentTeam team;
+    public GameObject futureObj;
+    public float futureTime;
     
     private float maxSpeed;
     private float maxForce;
@@ -59,8 +61,14 @@ public class Agent : MonoBehaviour
         ApplyForce(CalculateSteering(SteeringType.Cohesion) * cohesionWeight +
                    CalculateSteering(SteeringType.Align) * alignWeight +
                    CalculateSteering(SteeringType.Separation) * separationWeight);
+
+        /*Vector3 futurePos = transform.position + _velocity * futureTime;
+        futureObj.transform.position = futurePos;
         
-        /*Vector3 leaderDistance = leader.transform.position - transform.position;
+        if (!InSight(transform.position, futurePos)) 
+            ApplyForce(GetDirectionForce(-transform.right));
+        
+        Vector3 leaderDistance = leader.transform.position - transform.position;
 
         if (leaderDistance.magnitude <= viewDistance)
         {
@@ -76,6 +84,26 @@ public class Agent : MonoBehaviour
 
         transform.position += _velocity * Time.deltaTime;
         transform.forward = _velocity.normalized;
+    }
+    
+    private Vector3 GetDirectionForce(Vector3 dir)
+    {
+        Vector3 desired = dir;
+        desired.Normalize();
+        desired *= maxSpeed;
+
+        desired = Vector3.ClampMagnitude(desired, maxForce);
+        return desired;
+
+    }
+    
+    private bool InSight(Vector3 start, Vector3 end)
+    {
+        Vector3 dirToTarget = end - start;
+        if (!Physics.Raycast(start, dirToTarget, dirToTarget.magnitude, 9)) 
+            return true;
+        else 
+            return false;
     }
     
     private Vector3 CalculateSteering(SteeringType type)
