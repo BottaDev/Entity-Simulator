@@ -8,7 +8,9 @@ public class Agent : MonoBehaviour
     public Leader leader;
     public AgentTeam team;
     public GameObject futureObj;
+    [Range(0.01f, 1f)]
     public float futureTime;
+    public LayerMask obstacleMask;
     
     private float maxSpeed;
     private float maxForce;
@@ -58,17 +60,18 @@ public class Agent : MonoBehaviour
     private void Move()
     {
         Seek();
-        ApplyForce(CalculateSteering(SteeringType.Cohesion) * cohesionWeight +
+        /*ApplyForce(CalculateSteering(SteeringType.Cohesion) * cohesionWeight +
                    CalculateSteering(SteeringType.Align) * alignWeight +
                    CalculateSteering(SteeringType.Separation) * separationWeight);
-
-        /*Vector3 futurePos = transform.position + _velocity * futureTime;
+        */
+        ApplyForce(GetDirectionForce(transform.forward));
+        Vector3 futurePos = transform.position + _velocity * futureTime;
         futureObj.transform.position = futurePos;
         
         if (!InSight(transform.position, futurePos)) 
             ApplyForce(GetDirectionForce(-transform.right));
         
-        Vector3 leaderDistance = leader.transform.position - transform.position;
+        /*Vector3 leaderDistance = leader.transform.position - transform.position;
 
         if (leaderDistance.magnitude <= viewDistance)
         {
