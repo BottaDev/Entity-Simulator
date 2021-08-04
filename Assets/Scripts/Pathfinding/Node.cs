@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -9,6 +10,7 @@ public class Node : MonoBehaviour
     public bool isBlocked;
     public NodeGrid myGrid;
     public int cost;
+    public LayerMask obstacleMask;
 
     public void Spawn(Vector3 posInWorld, Vector2Int posGrid, NodeGrid grid)
     {
@@ -43,6 +45,7 @@ public class Node : MonoBehaviour
             Node upRight = myGrid.GetNodeFromGrid(myPosInGrid.x + 1, myPosInGrid.y - 1); 
             Node downRight = myGrid.GetNodeFromGrid(myPosInGrid.x + 1, myPosInGrid.y + 1); 
             Node downLeft = myGrid.GetNodeFromGrid(myPosInGrid.x - 1, myPosInGrid.y + 1); 
+            
             if (upLeft != null) 
                 neighbors.Add(upLeft);
             if (upRight != null) 
@@ -67,7 +70,8 @@ public class Node : MonoBehaviour
     public void ChangeCost(int v)
     {
         cost = v;
-        if (cost < 1) cost = 1;
+        if (cost < 1) 
+            cost = 1;
     }
 
 }

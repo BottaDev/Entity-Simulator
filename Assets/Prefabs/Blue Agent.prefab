@@ -137,13 +137,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e6b55b4c7fcb9b489e24c0bace09eac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  leader: {fileID: 0}
-  team: 0
-  futureObj: {fileID: 2974713048878571801}
-  futureTime: 0.1
   obstacleMask:
     serializedVersion: 2
     m_Bits: 512
+  viewRadius: 15
+  angleRadius: 120
+  futureObj: {fileID: 2974713048878571801}
+  futureTime: 0.3
+  maxSpeed: 10
+  maxForce: 1
+  stoppingDistance: 0.2
+  _path: []
+  leader: {fileID: 0}
+  team: 0
 --- !u!1 &2974713049168308143
 GameObject:
   m_ObjectHideFlags: 0

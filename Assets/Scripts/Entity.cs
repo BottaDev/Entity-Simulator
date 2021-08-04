@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.NetworkInformation;
 using UnityEngine;
 
 public class Entity : MonoBehaviour
@@ -18,7 +19,12 @@ public class Entity : MonoBehaviour
     public float maxSpeed;
     [Range(0.01f, 1f)]
     public float maxForce;
+    public float stoppingDistance = 0.2f;
+    [Header("DEBUGGING")]
+    [SerializeField]
+    protected List<Node> _path;
     
+    protected int _currentPathNode = 0;
     protected Vector3 _velocity;
     protected Node _startingNode;
     protected Node _goalNode;
@@ -158,6 +164,55 @@ public class Entity : MonoBehaviour
 
         return false;
     }
+    protected Node GetNearbyTargetNode(Vector3 targetPosition)
+    {
+        GameObject nearbyNode = null;
+
+        List<Node> allNodes = FindObjectsOfType<Node>().ToList();
+
+        float distance = 999f;
+        
+        foreach (var item in allNodes)
+        {
+            Vector3 nodeDistance = item.transform.position - targetPosition;
+
+            if (nodeDistance.magnitude < distance)
+            {
+                distance = nodeDistance.magnitude;
+                nearbyNode = item.gameObject;
+            }
+        }
+        
+        return nearbyNode.GetComponent<Node>();
+    }
+    
+    /// <summary>
+    ///  Moves through the nodes of the Theta* path 
+    /// </summary>
+    protected void MoveThroughNodes()
+    {
+        if (_path.Count <= 0)
+            return;
+        
+        Vector3 pointDistance = _path[_currentPathNode].transform.position - transform.position;
+        pointDistance = new Vector3(pointDistance.x, 0, pointDistance.z);
+        
+        if (pointDistance.magnitude < stoppingDistance)
+        {
+            _currentPathNode++;
+            if (_currentPathNode > _path.Count - 1)
+            {
+                _currentPathNode = 0;
+                _path.Clear();
+                return;
+            }
+        }
+        
+        Seek(_path[_currentPathNode].transform.position);
+        
+        transform.position += _velocity * Time.deltaTime;
+        transform.forward = _velocity;
+    }
     
     /// <summary>
     /// Returns true if detects obstacles
@@ -165,13 +220,12 @@ public class Entity : MonoBehaviour
     /// <returns></returns>
     protected bool CheckObstacles()
     {
-        ApplyForce(GetDirectionForce(transform.forward));
         Vector3 futurePos = transform.position + _velocity * futureTime;
         futureObj.transform.position = futurePos;
 
         if (!InSight(transform.position, futurePos))
         {
-            ApplyForce(GetDirectionForce(-transform.right));
+            ApplyForce(GetDirectionForce(transform.right) + GetDirectionForce(transform.forward));
             return true;
         }
         
@@ -188,6 +242,20 @@ public class Entity : MonoBehaviour
         return desired;
     }
     
+    protected void Seek(Vector3 newPosition)
+    {
+        Vector3 desired;
+        desired = newPosition - transform.position;
+        desired.Normalize();
+        desired *= maxSpeed;
+
+        Vector3 steering = desired - _velocity;
+        steering = Vector3.ClampMagnitude(steering, maxForce);
+        
+        _velocity = Vector3.ClampMagnitude(_velocity + steering, maxSpeed);
+        _velocity = new Vector3(_velocity.x, 0f, _velocity.z);
+    }
+    
     protected void ApplyForce(Vector3 force)
     {
         _velocity = Vector3.ClampMagnitude(_velocity + force, maxSpeed);
@@ -198,7 +266,7 @@ public class Entity : MonoBehaviour
         return _velocity;
     }
     
-    private void OnDrawGizmosSelected()
+    protected virtual void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, viewRadius);

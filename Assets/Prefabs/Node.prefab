@@ -109,3 +109,6 @@ MonoBehaviour:
   isBlocked: 0
   myGrid: {fileID: 0}
   cost: 0
+  obstacleMask:
+    serializedVersion: 2
+    m_Bits: 512

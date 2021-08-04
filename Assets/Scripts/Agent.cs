@@ -3,23 +3,17 @@ using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-public class Agent : MonoBehaviour
+public class Agent : Entity
 {
+    [Header("Properties")]
     public Leader leader;
     public AgentTeam team;
-    public GameObject futureObj;
-    [Range(0.01f, 1f)]
-    public float futureTime;
-    public LayerMask obstacleMask;
     
-    private float maxSpeed;
-    private float maxForce;
-    private float viewDistance;
-    private float cohesionWeight;
-    private float alignWeight;
-    private float separationWeight;
-    private float separationRadius = 1.5f;
-    private Vector3 _velocity;
+    private float _viewDistance;
+    private float _cohesionWeight;
+    private float _alignWeight;
+    private float _separationWeight;
+    private float _separationRadius = 1.5f;
 
     private void Start()
     {
@@ -48,50 +42,52 @@ public class Agent : MonoBehaviour
     {
         maxSpeed = GameManager.instance.maxSpeed;
         maxForce = GameManager.instance.maxForce;
-        viewDistance = GameManager.instance.globalViewDistance;
-        cohesionWeight = GameManager.instance.globalCohesionWeight;
-        alignWeight = GameManager.instance.globalAlignWeight;
-        separationWeight = GameManager.instance.globalSeparationWeight;
+        _viewDistance = GameManager.instance.globalViewDistance;
+        _cohesionWeight = GameManager.instance.globalCohesionWeight;
+        _alignWeight = GameManager.instance.globalAlignWeight;
+        _separationWeight = GameManager.instance.globalSeparationWeight;
     }
 
     private void Move()
     {
-        /*Seek();
-        ApplyForce(CalculateSteering(SteeringType.Cohesion) * cohesionWeight +
-                   CalculateSteering(SteeringType.Align) * alignWeight +
-                   CalculateSteering(SteeringType.Separation) * separationWeight);*/
-        
-        ApplyForce(GetDirectionForce(transform.forward));
-        Vector3 futurePos = transform.position + _velocity * futureTime;
-        futureObj.transform.position = futurePos;
-        
-        if (!InSight(transform.position, futurePos)) 
-            ApplyForce(GetDirectionForce(-transform.right));
+        if (!CheckObstacles())
+        {
+            if (ApplyFOV(leader.transform.position))
+            {
+                FollowLeader();   
+            }
+            else
+            {
+                if (_path.Count <= 0)
+                {
+                    _startingNode = GetNearbyNode();
+                    _goalNode = GetNearbyTargetNode(leader.transform.position);
+                    
+                    _path = ConstructPath();   
+                }
 
+                MoveThroughNodes();
+            }
+                                
+        }
+    }
+
+    private void FollowLeader()
+    {
+        print("asd");
+        _path.Clear();
+        _currentPathNode = 0;
+        
+        ApplyForce(CalculateSteering(SteeringType.Cohesion) * _cohesionWeight +
+                   CalculateSteering(SteeringType.Align) * _alignWeight +
+                   CalculateSteering(SteeringType.Separation) * _separationWeight);
+        
+        Seek(leader.transform.position);
+            
         transform.position += _velocity * Time.deltaTime;
-        transform.forward = _velocity.normalized;
+        transform.forward = _velocity;
     }
-    
-    private Vector3 GetDirectionForce(Vector3 dir)
-    {
-        Vector3 desired = dir;
-        desired.Normalize();
-        desired *= maxSpeed;
 
-        desired = Vector3.ClampMagnitude(desired, maxForce);
-        return desired;
-
-    }
-    
-    private bool InSight(Vector3 start, Vector3 end)
-    {
-        Vector3 dirToTarget = end - start;
-        if (!Physics.Raycast(start, dirToTarget, dirToTarget.magnitude, 9)) 
-            return true;
-        else 
-            return false;
-    }
-    
     private Vector3 CalculateSteering(SteeringType type)
     {
         Vector3 desired = new Vector3();
@@ -102,7 +98,7 @@ public class Agent : MonoBehaviour
             if (boid != null && boid != this)
             {
                 Vector3 dist = boid.transform.position - transform.position;
-                if (dist.magnitude < viewDistance && (type == SteeringType.Align || type == SteeringType.Cohesion))
+                if (dist.magnitude < _viewDistance && (type == SteeringType.Align || type == SteeringType.Cohesion))
                 {
                     if (type == SteeringType.Align)
                     {
@@ -117,7 +113,7 @@ public class Agent : MonoBehaviour
 
                     visibleBoids++;
                 }
-                else if (dist.magnitude < separationRadius && type == SteeringType.Separation)
+                else if (dist.magnitude < _separationRadius && type == SteeringType.Separation)
                 {
                     desired.x += dist.x;
                     desired.z += dist.z;
@@ -147,31 +143,6 @@ public class Agent : MonoBehaviour
         return steering;
     }
 
-    // Moves to the leader position
-    private void Seek()
-    {
-        Vector3 desired;
-        desired = leader.transform.position - transform.position;
-        desired.Normalize();
-        desired *= leader.maxSpeed;
-
-        Vector3 steering = desired - leader.GetVelocity();
-        steering = Vector3.ClampMagnitude(steering, leader.maxForce);
-
-        _velocity = Vector3.ClampMagnitude(_velocity + steering, maxSpeed);
-        _velocity = new Vector3(_velocity.x, 0f, _velocity.z);
-    }
-    
-    private void ApplyForce(Vector3 force)
-    {
-        _velocity = Vector3.ClampMagnitude(_velocity + force, maxSpeed);
-    }
-
-    public Vector3 GetVelocity()
-    {
-        return _velocity;
-    }
-    
     private enum SteeringType
     {
         Separation,
@@ -185,12 +156,14 @@ public class Agent : MonoBehaviour
         Red
     }
 
-    private void OnDrawGizmosSelected()
+    protected override void OnDrawGizmosSelected()
     {
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(transform.position, viewDistance);
+        base.OnDrawGizmosSelected();
+        
+        Gizmos.color = Color.green;
+        Gizmos.DrawWireSphere(transform.position, _viewDistance);
         
         Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, separationRadius);
+        Gizmos.DrawWireSphere(transform.position, _separationRadius);
     }
 }

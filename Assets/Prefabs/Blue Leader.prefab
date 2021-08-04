@@ -114,7 +114,7 @@ MonoBehaviour:
   viewRadius: 15
   angleRadius: 120
   futureObj: {fileID: 4994047317916278455}
-  futureTime: 0.1
+  futureTime: 0.3
   maxSpeed: 10
   maxForce: 1
   stoppingDistance: 0.1
