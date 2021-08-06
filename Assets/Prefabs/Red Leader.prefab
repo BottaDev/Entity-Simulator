@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 1607302381727632503}
   - component: {fileID: 1607302381727632496}
   m_Layer: 0
-  m_Name: Blue Leader
+  m_Name: Red Leader
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -61,7 +61,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: dc537e6ba62889640811274cc97556df, type: 2}
+  - {fileID: 2100000, guid: f94d7168b4d972a42a7812d079682263, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -117,8 +117,8 @@ MonoBehaviour:
   futureTime: 0.1
   maxSpeed: 10
   maxForce: 1
-  stoppingDistance: 0.2
-  team: 0
+  stoppingDistance: 0.3
+  team: 1
   clickMask:
     serializedVersion: 2
     m_Bits: 256
@@ -179,7 +179,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: dc537e6ba62889640811274cc97556df, type: 2}
+  - {fileID: 2100000, guid: f94d7168b4d972a42a7812d079682263, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

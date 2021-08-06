@@ -8,6 +8,7 @@ using UnityEngineInternal;
 public class Leader : Entity
 {
     [Header("Properties")]
+    public Agent.AgentTeam team;
     public LayerMask clickMask;
 
     private Vector3 _targetPosition;
@@ -25,7 +26,7 @@ public class Leader : Entity
 
     private void GetClick()
     {
-        if (Input.GetMouseButtonDown(0))
+        if ((Input.GetMouseButtonDown(0) && team == Agent.AgentTeam.Blue) || (Input.GetMouseButtonDown(1) && team == Agent.AgentTeam.Red))
         {
             RaycastHit hit;
 
@@ -49,7 +50,7 @@ public class Leader : Entity
     {
         if (!CheckObstacles())
         {
-            if (_path.Count <= 0)
+            if (_path == null|| _path.Count <= 0)
                 MoveToVisiblePos();
             else
                 MoveThroughNodes();

@@ -22,7 +22,7 @@ public class Entity : MonoBehaviour
     public float maxForce;
     public float stoppingDistance = 0.2f;
     [Header("DEBUGGING")]
-    [SerializeField]
+    //[SerializeField]
     protected List<Node> _path;
     
     protected int _currentPathNode = 0;
@@ -192,7 +192,7 @@ public class Entity : MonoBehaviour
     /// </summary>
     protected void MoveThroughNodes()
     {
-        if (_path.Count <= 0)
+        if (_path == null || _path.Count <= 0)
             return;
         
         try

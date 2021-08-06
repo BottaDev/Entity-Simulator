@@ -58,7 +58,7 @@ public class Agent : Entity
             }
             else
             {
-                if (_path.Count <= 0)
+                if (_path == null || _path.Count <= 0)
                 {
                     _startingNode = GetNearbyNode();
                     _goalNode = GetNearbyTargetNode(leader.transform.position);
@@ -68,22 +68,20 @@ public class Agent : Entity
 
                 MoveThroughNodes();
             }
-                                
         }
     }
 
     private void FollowLeader()
     {
-        print("asd");
-        _path.Clear();
+        _path?.Clear();
         _currentPathNode = 0;
+        
+        Seek(leader.transform.position);
         
         ApplyForce(CalculateSteering(SteeringType.Cohesion) * _cohesionWeight +
                    CalculateSteering(SteeringType.Align) * _alignWeight +
                    CalculateSteering(SteeringType.Separation) * _separationWeight);
-        
-        Seek(leader.transform.position);
-            
+
         transform.position += _velocity * Time.deltaTime;
         transform.forward = _velocity;
     }
@@ -93,22 +91,22 @@ public class Agent : Entity
         Vector3 desired = new Vector3();
         int visibleBoids = 0;
 
-        foreach (var boid in GameManager.instance.blueAgents)
+        foreach (var agent in GameManager.instance.blueAgents)
         {
-            if (boid != null && boid != this)
+            if (agent != null && agent != this)
             {
-                Vector3 dist = boid.transform.position - transform.position;
+                Vector3 dist = agent.transform.position - transform.position;
                 if (dist.magnitude < _viewDistance && (type == SteeringType.Align || type == SteeringType.Cohesion))
                 {
                     if (type == SteeringType.Align)
                     {
-                        desired.x += boid.GetVelocity().x;
-                        desired.z += boid.GetVelocity().z;
+                        desired.x += agent.GetVelocity().x;
+                        desired.z += agent.GetVelocity().z;
                     }
                     else if (type == SteeringType.Cohesion)
                     {
-                        desired.x += boid.transform.position.x;
-                        desired.z += boid.transform.position.z;   
+                        desired.x += agent.transform.position.x;
+                        desired.z += agent.transform.position.z;   
                     }
 
                     visibleBoids++;

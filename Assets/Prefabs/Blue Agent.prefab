@@ -140,14 +140,13 @@ MonoBehaviour:
   obstacleMask:
     serializedVersion: 2
     m_Bits: 512
-  viewRadius: 15
-  angleRadius: 120
+  viewRadius: 20
+  angleRadius: 180
   futureObj: {fileID: 2974713048878571801}
-  futureTime: 0.3
+  futureTime: 0.1
   maxSpeed: 10
   maxForce: 1
   stoppingDistance: 0.2
-  _path: []
   leader: {fileID: 0}
   team: 0
 --- !u!1 &2974713049168308143
@@ -161,7 +160,6 @@ GameObject:
   - component: {fileID: 2974713049168308142}
   - component: {fileID: 2974713049168308131}
   - component: {fileID: 2974713049168308140}
-  - component: {fileID: 2974713049168308141}
   m_Layer: 0
   m_Name: Cube
   m_TagString: Untagged
@@ -229,16 +227,3 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!65 &2974713049168308141
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2974713049168308143}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
