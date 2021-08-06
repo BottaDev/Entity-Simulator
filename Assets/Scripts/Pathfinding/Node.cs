@@ -10,7 +10,6 @@ public class Node : MonoBehaviour
     public bool isBlocked;
     public NodeGrid myGrid;
     public int cost;
-    public LayerMask obstacleMask;
 
     public void Spawn(Vector3 posInWorld, Vector2Int posGrid, NodeGrid grid)
     {
@@ -62,7 +61,6 @@ public class Node : MonoBehaviour
     void ChangeWallProperty(bool c)
     {
         isBlocked = c;
-        Color color = c ? Color.gray : Color.white;
         gameObject.layer = c ? 8 : 0;
 
     }
@@ -74,4 +72,15 @@ public class Node : MonoBehaviour
             cost = 1;
     }
 
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.layer == 9)
+            isBlocked = true;
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.gameObject.layer == 9)
+            isBlocked = false;
+    }
 }

@@ -29,7 +29,8 @@ public class Leader : Entity
         {
             RaycastHit hit;
 
-            if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, Mathf.Infinity, clickMask))
+            if (!Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, Mathf.Infinity, obstacleMask) && 
+                Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, Mathf.Infinity, clickMask))
             {
                 _targetPosition = hit.point;
 

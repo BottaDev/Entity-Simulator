@@ -117,11 +117,11 @@ MonoBehaviour:
   futureTime: 0.3
   maxSpeed: 10
   maxForce: 1
-  stoppingDistance: 0.1
+  stoppingDistance: 0.3
+  _path: []
   clickMask:
     serializedVersion: 2
     m_Bits: 256
-  _path: []
 --- !u!1 &1607302383269811171
 GameObject:
   m_ObjectHideFlags: 0

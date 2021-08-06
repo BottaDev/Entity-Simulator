@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.NetworkInformation;
@@ -194,20 +195,32 @@ public class Entity : MonoBehaviour
         if (_path.Count <= 0)
             return;
         
-        Vector3 pointDistance = _path[_currentPathNode].transform.position - transform.position;
-        pointDistance = new Vector3(pointDistance.x, 0, pointDistance.z);
-        
-        if (pointDistance.magnitude < stoppingDistance)
+        try
         {
-            _currentPathNode++;
-            if (_currentPathNode > _path.Count - 1)
+            Vector3 pointDistance = _path[_currentPathNode].transform.position - transform.position;
+            
+            pointDistance = new Vector3(pointDistance.x, 0, pointDistance.z);
+        
+            if (pointDistance.magnitude < stoppingDistance)
             {
-                _currentPathNode = 0;
-                _path.Clear();
-                return;
+                _currentPathNode++;
+                if (_currentPathNode > _path.Count - 1)
+                {
+                    _currentPathNode = 0;
+                    _path.Clear();
+                    return;
+                }
             }
         }
-        
+        catch (Exception e)
+        {
+            Debug.LogWarning("Error calculating the path.");
+            
+            _currentPathNode = 0;
+            _path.Clear();
+            return;
+        }
+
         Seek(_path[_currentPathNode].transform.position);
         
         transform.position += _velocity * Time.deltaTime;
