@@ -36,12 +36,7 @@ public class Leader : Entity
                 _targetPosition = hit.point;
 
                 if (!ApplyFOV(_targetPosition))
-                {
-                    _startingNode = GetNearbyNode();
-                    _goalNode = GetNearbyTargetNode(_targetPosition);
-                    
-                    _path = ConstructPath();   
-                }
+                    SetPath(_targetPosition);
             }
         }        
     }
@@ -54,6 +49,11 @@ public class Leader : Entity
                 MoveToVisiblePos();
             else
                 MoveThroughNodes();
+        }
+        else
+        {
+            // Recalculate the path
+            SetPath(_targetPosition);
         }
     }
 

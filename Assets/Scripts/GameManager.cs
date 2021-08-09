@@ -8,8 +8,7 @@ public class GameManager : MonoBehaviour
     [Header("Agents")]
     public List<Agent> blueAgents;
     public List<Agent> redAgents;
-    public List<Boid> boids;
-    
+
     [Header("Agent Settings")]
     public float maxSpeed = 10;
     [Range(0.01f, 1f)]

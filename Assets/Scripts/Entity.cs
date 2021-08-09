@@ -21,16 +21,16 @@ public class Entity : MonoBehaviour
     [Range(0.01f, 1f)]
     public float maxForce;
     public float stoppingDistance = 0.2f;
+    
     [Header("DEBUGGING")]
-    //[SerializeField]
+    [SerializeField]
     protected List<Node> _path;
     
     protected int _currentPathNode = 0;
     protected Vector3 _velocity;
-    protected Node _startingNode;
-    protected Node _goalNode;
-    protected List<Transform> _visibleNodes = new List<Transform>();
-    
+    private Node _startingNode;
+    private Node _goalNode;
+
     protected List<Node> ConstructPath()
     {
         PriorityQueue frontier = new PriorityQueue();
@@ -85,10 +85,12 @@ public class Entity : MonoBehaviour
 
     private List<Node> SmoothPath(List<Node> p)
     {
-        if (p.Count <= 1) return p;
+        if (p.Count <= 1) 
+            return p;
 
         List<Node> newPath = p;
         newPath.Reverse();
+        
         int index = 0;
         int count = newPath.Count;
 
@@ -165,7 +167,14 @@ public class Entity : MonoBehaviour
 
         return false;
     }
-    protected Node GetNearbyTargetNode(Vector3 targetPosition)
+
+    private void ResetPath()
+    {
+        _path?.Clear();
+        _currentPathNode = 0;
+    }
+    
+    private Node GetNearbyTargetNode(Vector3 targetPosition)
     {
         GameObject nearbyNode = null;
 
@@ -206,8 +215,7 @@ public class Entity : MonoBehaviour
                 _currentPathNode++;
                 if (_currentPathNode > _path.Count - 1)
                 {
-                    _currentPathNode = 0;
-                    _path.Clear();
+                    ResetPath();
                     return;
                 }
             }
@@ -216,8 +224,7 @@ public class Entity : MonoBehaviour
         {
             Debug.LogWarning("Error calculating the path.");
             
-            _currentPathNode = 0;
-            _path.Clear();
+            ResetPath();
             return;
         }
 
@@ -239,10 +246,20 @@ public class Entity : MonoBehaviour
         if (!InSight(transform.position, futurePos))
         {
             ApplyForce(GetDirectionForce(transform.right) + GetDirectionForce(transform.forward));
+            
+            ResetPath();
             return true;
         }
         
         return false;
+    }
+
+    protected void SetPath(Vector3 position)
+    {
+        _startingNode = GetNearbyNode();
+        _goalNode = GetNearbyTargetNode(position);
+                    
+        _path = ConstructPath();
     }
     
     private Vector3 GetDirectionForce(Vector3 dir)

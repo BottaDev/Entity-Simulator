@@ -17,7 +17,10 @@ public class Agent : Entity
 
     private void Start()
     {
-        GameManager.instance.blueAgents.Add(this);
+        if (team == AgentTeam.Blue)
+            GameManager.instance.blueAgents.Add(this);
+        else
+            GameManager.instance.redAgents.Add(this);
 
         float randomX = Random.Range(-10, 10);
         float randomZ = Random.Range(-10, 10);
@@ -59,15 +62,15 @@ public class Agent : Entity
             else
             {
                 if (_path == null || _path.Count <= 0)
-                {
-                    _startingNode = GetNearbyNode();
-                    _goalNode = GetNearbyTargetNode(leader.transform.position);
-                    
-                    _path = ConstructPath();   
-                }
+                    SetPath(leader.transform.position);
 
                 MoveThroughNodes();
             }
+        }
+        else
+        {
+            // Recalculate the path
+            SetPath(leader.transform.position);
         }
     }
 
@@ -91,7 +94,9 @@ public class Agent : Entity
         Vector3 desired = new Vector3();
         int visibleBoids = 0;
 
-        foreach (var agent in GameManager.instance.blueAgents)
+        List<Agent> agents = team == AgentTeam.Blue ? GameManager.instance.blueAgents : GameManager.instance.redAgents;
+        
+        foreach (var agent in agents)
         {
             if (agent != null && agent != this)
             {
